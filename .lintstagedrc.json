@@ -1,0 +1,4 @@
+{
+  "*.{js,ts,jsx,tsx}  !(*.config.js)": ["eslint --max-warnings=0"],
+  "*.{json,md,css,yaml,sh,svg}": ["prettier --list-different"]
+}
