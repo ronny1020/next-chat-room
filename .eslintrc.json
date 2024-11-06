@@ -3,8 +3,19 @@
     "prettier",
     "next/core-web-vitals",
     "next/typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:react/jsx-runtime",
     "plugin:tailwindcss/recommended",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["react", "@typescript-eslint", "tailwindcss", "prettier"]
+  "plugins": ["react", "@typescript-eslint", "tailwindcss", "prettier"],
+  "settings": {
+    "tailwindcss": {
+      "callees": ["twMerge"],
+      "config": "tailwind.config.ts"
+    }
+  }
 }
