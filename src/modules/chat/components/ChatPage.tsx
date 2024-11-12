@@ -15,6 +15,7 @@ import addReaderToMyMessageReadBy from '../domain/addReaderToMyMessageReadBy.'
 import createMessageUuidMap from '../domain/createMessageUuidMap'
 import isElementScrolledToBottom from '@/shared/utils/dom/isElementScrolledToBottom'
 import requiredWithTrimmed from '@/shared/utils/form/validate/requiredWithTrimmed'
+import useWebsocket from '../services/websocket/useWebsocket'
 
 interface MessageForm {
   message: string
@@ -30,6 +31,8 @@ interface Props {
 }
 
 export default function ChatPage({ userName }: Props) {
+  useWebsocket()
+
   const messageChannel = useBroadcastChannel<Message>('message')
   const readChannel = useBroadcastChannel<ReaderData>('read')
 

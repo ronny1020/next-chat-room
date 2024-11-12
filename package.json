@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node --loader ts-node/esm src/server/index.mts",
     "build": "next build",
-    "start": "next start",
+    "start": "node --loader ts-node/esm src/server/index.mts",
     "lint": "next lint --fix",
     "format": "prettier . --write",
     "prepare": "husky",
@@ -21,16 +21,20 @@
     "@mui/material-nextjs": "^6.1.6",
     "condition-switch": "^0.1.1",
     "dayjs": "^1.11.12",
+    "express": "^4.21.1",
     "next": "15.0.2",
     "react": "19.0.0-rc-02c0e824-20241028",
     "react-dom": "19.0.0-rc-02c0e824-20241028",
     "react-hook-form": "^7.52.1",
-    "tailwind-merge": "^2.5.4"
+    "tailwind-merge": "^2.5.4",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/ws": "^8.5.13",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.2",
@@ -44,6 +48,7 @@
     "postcss": "^8",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
