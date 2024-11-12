@@ -11,7 +11,12 @@ const server = app.listen(3000)
 console.log('Server started on http://localhost:3000')
 
 const wss = new WebSocketServer({ noServer: true })
-const nextApp = next({ dev: process.env.NODE_ENV !== 'production' })
+
+const nextApp = next({
+  dev: process.env.NODE_ENV !== 'production',
+  turbopack: true,
+})
+
 const clients = new Set<WebSocket>()
 
 nextApp.prepare().then(() => {
@@ -27,6 +32,7 @@ nextApp.prepare().then(() => {
       console.log(`Message received: ${message}`)
       clients.forEach((client) => {
         if (
+          client !== ws &&
           client.readyState === WebSocket.OPEN &&
           message.toString() !== `{"event":"ping"}`
         ) {

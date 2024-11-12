@@ -2,13 +2,12 @@
 
 import Header from './Header/Header'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Message } from '../types/message'
+import { Message, ReaderData } from '../types/message'
 import { useForm } from 'react-hook-form'
 import { Box, Button, Divider, IconButton, TextField } from '@mui/material'
 import MessageBox from './MessageBox/MessageBox'
 import useExecuteAfterRender from '../hooks/useExecuteAfterRender'
 import DeleteIcon from '@mui/icons-material/Delete'
-import useBroadcastChannel from '../hooks/useBroadcastChannel'
 import findUnreadUuid from '../domain/findUnreadUuid'
 import addUserNameToMessageReadBy from '../domain/addUserNameToMessageReadBy'
 import addReaderToMyMessageReadBy from '../domain/addReaderToMyMessageReadBy.'
@@ -21,43 +20,22 @@ interface MessageForm {
   message: string
 }
 
-interface ReaderData {
-  uuids: string[]
-  reader: string
-}
-
 interface Props {
   userName: string
 }
 
 export default function ChatPage({ userName }: Props) {
-  useWebsocket()
-
-  const messageChannel = useBroadcastChannel<Message>('message')
-  const readChannel = useBroadcastChannel<ReaderData>('read')
-
   const [messages, setMessages] = useState<Message[]>([])
-
-  const readUnreadMessages = useCallback(() => {
-    const uuids = findUnreadUuid(messages, userName)
-
-    if (uuids.length) {
-      const data: ReaderData = { uuids, reader: userName }
-      readChannel.postMessage(data)
-      setMessages((previous) =>
-        addUserNameToMessageReadBy(previous, userName, uuids),
-      )
-    }
-  }, [messages, readChannel, userName])
 
   const bottomRef = useRef<HTMLDivElement>(null)
   const scrollToBottomCallback = useCallback(() => {
     bottomRef.current?.scrollIntoView()
   }, [])
+
   const scrollToBottom = useExecuteAfterRender(scrollToBottomCallback)
 
-  useEffect(() => {
-    messageChannel.onmessage((message) => {
+  const onMessage = useCallback(
+    (message: Message) => {
       setMessages((prev) => [...prev, message])
 
       const messageAreaElement = bottomRef.current?.parentNode
@@ -68,16 +46,35 @@ export default function ChatPage({ userName }: Props) {
       ) {
         scrollToBottom()
       }
-    })
-  }, [messageChannel, readUnreadMessages, scrollToBottom])
+    },
+    [scrollToBottom],
+  )
 
-  useEffect(() => {
-    readChannel.onmessage(({ uuids, reader }) => {
+  const onReadMessage = useCallback(
+    ({ uuids, reader }: ReaderData) => {
       setMessages((previous) =>
         addReaderToMyMessageReadBy(previous, userName, uuids, reader),
       )
-    })
-  }, [readChannel, userName])
+    },
+    [userName],
+  )
+
+  const { sendMessage, readMessage } = useWebsocket({
+    onMessage,
+    onReadMessage,
+  })
+
+  const readUnreadMessages = useCallback(() => {
+    const uuids = findUnreadUuid(messages, userName)
+
+    if (uuids.length) {
+      readMessage({ uuids, reader: userName })
+
+      setMessages((previous) =>
+        addUserNameToMessageReadBy(previous, userName, uuids),
+      )
+    }
+  }, [messages, readMessage, userName])
 
   useEffect(() => {
     const isFocused = document.hasFocus()
@@ -117,7 +114,7 @@ export default function ChatPage({ userName }: Props) {
     const message: Message = {
       text: messageForm.message,
       userName,
-      createdAt: new Date(),
+      createdAt: new Date().getTime(),
       uuid: crypto.randomUUID(),
       readBy: [userName],
     }
@@ -127,7 +124,7 @@ export default function ChatPage({ userName }: Props) {
       setReplyToMessageUuid(null)
     }
 
-    messageChannel.postMessage(message)
+    sendMessage(message)
 
     setMessages((prev) => [...prev, message])
 
@@ -143,7 +140,7 @@ export default function ChatPage({ userName }: Props) {
         {messages.map((message) => (
           <MessageBox
             message={message}
-            key={message.createdAt.getTime()}
+            key={message.createdAt}
             setReplyTo={setReplyToMessageUuid}
             replyToMessage={
               (message.replyTo && messageUuidMap[message.replyTo]) || null
