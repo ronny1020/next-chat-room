@@ -1,6 +1,7 @@
 {
   "endOfLine": "auto",
   "htmlWhitespaceSensitivity": "ignore",
+  "plugins": ["prettier-plugin-sh"],
   "semi": false,
   "singleQuote": true
 }

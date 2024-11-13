@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { Message, ReaderData } from '../../types/message'
 
-const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-
 interface MessageEventData {
   event: 'message'
   data: Message
@@ -30,6 +28,7 @@ export default function useWebsocket({
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`)
 
       ws.onmessage = (event) => {
