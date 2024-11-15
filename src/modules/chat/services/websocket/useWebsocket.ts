@@ -1,5 +1,3 @@
-'use client'
-
 import { useCallback, useEffect, useRef } from 'react'
 import { Message, ReaderData } from '../../types/message'
 
@@ -27,44 +25,40 @@ export default function useWebsocket({
   const webSocketRef = useRef<WebSocket | null>(null)
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`)
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`)
 
-      ws.onmessage = (event) => {
-        const message = JSON.parse(event.data) as SocketEventData
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data) as SocketEventData
 
-        // if (message.event === 'message') onMessage(message.data)
+      switch (message.event) {
+        case 'message':
+          onMessage(message.data)
+          break
 
-        switch (message.event) {
-          case 'message':
-            onMessage(message.data)
-            break
+        case 'readMessage':
+          onReadMessage(message.data)
+          break
 
-          case 'readMessage':
-            onReadMessage(message.data)
-            break
+        default:
+      }
+    }
 
-          default:
-        }
+    setInterval(() => {
+      if (ws.readyState !== ws.OPEN) {
+        webSocketRef.current = new WebSocket(
+          `${protocol}//${window.location.host}/api/ws`,
+        )
+        return
       }
 
-      setInterval(() => {
-        if (ws.readyState !== ws.OPEN) {
-          webSocketRef.current = new WebSocket(
-            `${protocol}//${window.location.host}/api/ws`,
-          )
-          return
-        }
+      ws.send(`{"event":"ping"}`)
+    }, 29000)
 
-        ws.send(`{"event":"ping"}`)
-      }, 29000)
+    webSocketRef.current = ws
 
-      webSocketRef.current = ws
-
-      return () => {
-        ws.close()
-      }
+    return () => {
+      ws.close()
     }
   }, [onMessage, onReadMessage])
 
