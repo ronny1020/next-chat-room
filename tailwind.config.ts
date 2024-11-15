@@ -6,6 +6,6 @@ const config: Config = {
   corePlugins: {
     preflight: false,
   },
-  // important: '#__next',
+  important: true,
 }
 export default config

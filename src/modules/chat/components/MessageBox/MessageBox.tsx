@@ -60,21 +60,24 @@ export default function MessageBox({
           component="button"
           className={twMerge(
             'max-w-[70vw] whitespace-pre-wrap break-words rounded-md border px-3 py-2 text-left',
-            isMyMessage ? 'bg-blue-200' : 'bg-white',
+            isMyMessage ? 'bg-blue-100' : 'bg-white',
           )}
         >
           {replyToMessage && (
             <>
               <Box
-                className="cursor-pointer px-4"
+                className="m-2 flex cursor-pointer items-center gap-2"
                 onClick={() => scrollToId(replyToMessage.uuid)}
               >
-                <div>{replyToMessage.text}</div>
+                <Avatar className="size-6">
+                  {replyToMessage.userName?.[0]}
+                </Avatar>
+                <Box>{replyToMessage.text}</Box>
               </Box>
               <Divider />
             </>
           )}
-          <Box className="cursor-pointer px-4" onClick={handleClick}>
+          <Box className="m-2 cursor-pointer" onClick={handleClick}>
             <div>{text}</div>
           </Box>
           <Popover
