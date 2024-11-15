@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NEXT CHAT ROOM
 
-## Getting Started
+## Overview
 
-First, run the development server:
+This project is a real-time chat application built with **Next.js** and **WebSocket** using the **Next.js App Router**. It enables users to send and receive messages instantly with key chat features like read receipts and message replies. The app is designed for scalability and performance, with WebSocket handling real-time communication directly within the Next.js API routes.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Node
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Install dependencies: `pnpm install`
+2. Build the app: `pnpm build`
+3. Run the app: `pnpm start`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Docker
 
-## Learn More
+1. Build the Docker image: `docker build -t next-chat-room .`
+2. Run the Docker container: `docker run -p 3000:3000 next-chat-room`
 
-To learn more about Next.js, take a look at the following resources:
+## Key Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Real-Time Messaging**: WebSocket is integrated into Next.js App Router API routes, allowing instant messaging and low-latency communication.
+- **Read Receipts**: Visual indicators show whether messages have been read by the recipient.
+- **Reply to Messages**: Users can reply to specific messages, creating threaded conversations for better context.
+- **Dockerized Application**: The entire application is wrapped in Docker, ensuring consistent environments for development and deployment across platforms.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Technologies Used
 
-## Deploy on Vercel
+- **Frontend**: Next.js (React framework with server-side rendering and API routes)
+- **Backend**: WebSocket server integrated within Next.js API routes for real-time communication
+- **Containerization**: Docker for consistent environment setup and deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Purpose
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project provides a fully functional, scalable real-time chat application, with WebSocket communication handled directly inside the Next.js App Router. It is a great foundation for adding features like group chats, media sharing, user authentication, and more.
