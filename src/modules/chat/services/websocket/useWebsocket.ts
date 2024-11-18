@@ -25,40 +25,45 @@ export default function useWebsocket({
   const webSocketRef = useRef<WebSocket | null>(null)
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`)
+    if (
+      !webSocketRef.current ||
+      webSocketRef.current.readyState === WebSocket.CLOSED
+    ) {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`)
 
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data) as SocketEventData
+      ws.onmessage = (event) => {
+        const message = JSON.parse(event.data) as SocketEventData
 
-      switch (message.event) {
-        case 'message':
-          onMessage(message.data)
-          break
+        switch (message.event) {
+          case 'message':
+            onMessage(message.data)
+            break
 
-        case 'readMessage':
-          onReadMessage(message.data)
-          break
+          case 'readMessage':
+            onReadMessage(message.data)
+            break
 
-        default:
-      }
-    }
-
-    setInterval(() => {
-      if (ws.readyState !== ws.OPEN) {
-        webSocketRef.current = new WebSocket(
-          `${protocol}//${window.location.host}/api/ws`,
-        )
-        return
+          default:
+        }
       }
 
-      ws.send(`{"event":"ping"}`)
-    }, 29000)
+      setInterval(() => {
+        if (ws.readyState !== ws.OPEN) {
+          webSocketRef.current = new WebSocket(
+            `${protocol}//${window.location.host}/api/ws`,
+          )
+          return
+        }
 
-    webSocketRef.current = ws
+        ws.send(`{"event":"ping"}`)
+      }, 29000)
 
-    return () => {
-      ws.close()
+      webSocketRef.current = ws
+
+      return () => {
+        if (ws.readyState === WebSocket.OPEN) ws.close()
+      }
     }
   }, [onMessage, onReadMessage])
 
